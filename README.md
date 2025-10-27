@@ -52,7 +52,7 @@
 
 ## 🤝 Вклад в проект
 
-Вклад приветствуется! См. [code of conduct](./CODE_OF_CONDUCT.md) для правил поведения.
+Вклад приветствуется! См. [code of conduct](https://github.com/Vlad-Loop/n8n-nodes-telegram-stars/blob/master/CODE_OF_CONDUCT.md) для правил поведения.
 
 1. Форкните репозиторий
 2. Создайте ветку для ваших изменений
@@ -67,5 +67,5 @@
 
 ## 📄 Лицензия
 
-MIT License - см. [LICENSE](./LICENSE) для подробностей.
+MIT License - см. [LICENSE](https://github.com/Vlad-Loop/n8n-nodes-telegram-stars/blob/master/LICENSE.md) для подробностей.
 
