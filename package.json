@@ -10,14 +10,14 @@
     "payments"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/yourusername/n8n-nodes-telegram-stars",
+  "homepage": "https://github.com/Vlad-Loop/n8n-nodes-telegram-stars",
   "author": {
-    "name": "Your Name",
-    "email": "your.email@example.com"
+    "name": "Vlad Loop",
+    "email": "v.tarasenko1997@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/n8n-nodes-telegram-stars.git"
+    "url": "git+https://github.com/Vlad-Loop/n8n-nodes-telegram-stars.git"
   },
   "main": "index.js",
   "scripts": {

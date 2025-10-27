@@ -12,6 +12,7 @@
 - **Answer Pre-Checkout Query** - Ответ на запросы pre-checkout
 - **Refund Star Payment** - Возврат успешного платежа в Telegram Stars
 - **Get Star Transactions** - Получение списка транзакций Telegram Stars
+- **Get Bot Stars Balance** - Получение текущего баланса Stars выбранного бота Telegram
 - Поддержка всех дополнительных полей для Send Invoice (фото, чаевые, адреса и т.д.)
 - Валидация входных данных с детальными сообщениями об ошибках
 - Дисклаймеры и предупреждения в интерфейсе узла и credentials
