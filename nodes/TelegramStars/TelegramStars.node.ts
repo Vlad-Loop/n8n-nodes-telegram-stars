@@ -61,6 +61,12 @@ export class TelegramStars implements INodeType {
 						description: 'Get the list of Telegram Star transactions',
 						action: 'Get star transactions',
 					},
+					{
+						name: 'Get Bot Stars Balance',
+						value: 'getBotStarsBalance',
+						description: 'Get the current bot\'s star balance',
+						action: 'Get bot stars balance',
+					},
 				],
 				default: 'sendInvoice',
 			},
@@ -132,44 +138,30 @@ export class TelegramStars implements INodeType {
 				description: 'Three-letter ISO 4217 currency code. Use "XTR" for Telegram Stars.',
 			},
 		{
-			displayName: 'Prices',
-			name: 'prices',
-			type: 'fixedCollection',
-			typeOptions: {
-				multipleValues: true,
-			},
+			displayName: 'Price Label',
+			name: 'priceLabel',
+			type: 'string',
 			required: true,
 			displayOptions: {
 				show: {
 					operation: ['sendInvoice'],
 				},
 			},
-			default: {},
-			description: 'Price breakdown for the invoice',
-			options: [
-				{
-					name: 'price',
-					displayName: 'Price',
-					values: [
-						{
-							displayName: 'Label',
-							name: 'label',
-							type: 'string',
-							default: '',
-							description: 'Portion label',
-							required: true,
-						},
-						{
-							displayName: 'Amount',
-							name: 'amount',
-							type: 'number',
-							default: 1,
-							description: 'Price of the product in the smallest units of the currency',
-							required: true,
-						},
-					],
+			default: '',
+			description: 'Portion label',
+		},
+		{
+			displayName: 'Price Amount',
+			name: 'priceAmount',
+			type: 'number',
+			required: true,
+			displayOptions: {
+				show: {
+					operation: ['sendInvoice'],
 				},
-			],
+			},
+			default: 1,
+			description: 'Price of the product in the smallest units of the currency',
 		},
 			{
 				displayName: 'Additional Fields',
@@ -189,20 +181,6 @@ export class TelegramStars implements INodeType {
 						type: 'number',
 						default: 0,
 						description: 'Unique identifier for the target message thread',
-					},
-					{
-						displayName: 'Max Tip Amount',
-						name: 'max_tip_amount',
-						type: 'number',
-						default: 0,
-						description: 'The maximum accepted amount for tips in the smallest currency units',
-					},
-					{
-						displayName: 'Suggested Tip Amounts',
-						name: 'suggested_tip_amounts',
-						type: 'string',
-						default: '',
-						description: 'JSON array of suggested tip amounts. Example: [10,20,50,100].',
 					},
 					{
 						displayName: 'Provider Data',
@@ -238,55 +216,6 @@ export class TelegramStars implements INodeType {
 						type: 'number',
 						default: 0,
 						description: 'Photo height',
-					},
-					{
-						displayName: 'Need Name',
-						name: 'need_name',
-						type: 'boolean',
-						default: false,
-						description: 'Whether you require the user\'s full name',
-					},
-					{
-						displayName: 'Need Phone Number',
-						name: 'need_phone_number',
-						type: 'boolean',
-						default: false,
-						description: 'Whether you require the user\'s phone number',
-					},
-					{
-						displayName: 'Need Email',
-						name: 'need_email',
-						type: 'boolean',
-						default: false,
-						description: 'Whether you require the user\'s email address',
-					},
-					{
-						displayName: 'Need Shipping Address',
-						name: 'need_shipping_address',
-						type: 'boolean',
-						default: false,
-						description: 'Whether you require the user\'s shipping address',
-					},
-					{
-						displayName: 'Send Phone Number to Provider',
-						name: 'send_phone_number_to_provider',
-						type: 'boolean',
-						default: false,
-						description: 'Whether the user\'s phone number should be sent to the provider',
-					},
-					{
-						displayName: 'Send Email to Provider',
-						name: 'send_email_to_provider',
-						type: 'boolean',
-						default: false,
-						description: 'Whether the user\'s email address should be sent to the provider',
-					},
-					{
-						displayName: 'Is Flexible',
-						name: 'is_flexible',
-						type: 'boolean',
-						default: false,
-						description: 'Whether the final price depends on the shipping method',
 					},
 					{
 						displayName: 'Disable Notification',
@@ -436,45 +365,33 @@ export class TelegramStars implements INodeType {
 				const description = this.getNodeParameter('description', i) as string;
 				const payload = this.getNodeParameter('payload', i) as string;
 				const currency = this.getNodeParameter('currency', i) as string;
-				const pricesData = this.getNodeParameter('prices', i) as {
-					price?: Array<{ label: string; amount: number }>;
-				};
+				const priceLabel = this.getNodeParameter('priceLabel', i) as string;
+				const priceAmount = this.getNodeParameter('priceAmount', i) as number;
 				const additionalFields = this.getNodeParameter('additionalFields', i, {}) as {
 					[key: string]: any;
 				};
 
-			// Convert prices from fixedCollection format to Telegram API format
-			const prices = pricesData.price || [];
-			
-			if (prices.length === 0) {
+			// Validate price fields
+			if (!priceLabel || priceLabel.trim() === '') {
 				throw new NodeOperationError(
 					this.getNode(),
-					'At least one price item is required',
+					'Price label is required',
+					{ itemIndex: i },
+				);
+			}
+			if (!priceAmount || priceAmount <= 0) {
+				throw new NodeOperationError(
+					this.getNode(),
+					'Price amount must be a positive number',
 					{ itemIndex: i },
 				);
 			}
 
-			// Validate that all prices have required fields
-			const validatedPrices = prices.map((price, index) => {
-				if (!price.label || price.label.trim() === '') {
-					throw new NodeOperationError(
-						this.getNode(),
-						`Price item ${index + 1} must have a label`,
-						{ itemIndex: i },
-					);
-				}
-				if (!price.amount || price.amount <= 0) {
-					throw new NodeOperationError(
-						this.getNode(),
-						`Price item ${index + 1} must have a positive amount`,
-						{ itemIndex: i },
-					);
-				}
-				return {
-					label: price.label.trim(),
-					amount: Math.floor(price.amount), // Ensure amount is integer
-				};
-			});
+			// Create single price object
+			const validatedPrices = [{
+				label: priceLabel.trim(),
+				amount: Math.floor(priceAmount), // Ensure amount is integer
+			}];
 
 					const body: any = {
 						chat_id: chatId,
@@ -488,20 +405,7 @@ export class TelegramStars implements INodeType {
 
 					// Add additional fields
 					Object.keys(additionalFields).forEach((key) => {
-						if (
-							key === 'suggested_tip_amounts' &&
-							typeof additionalFields[key] === 'string'
-						) {
-						try {
-							body[key] = JSON.parse(additionalFields[key] as string);
-						} catch (error) {
-							throw new NodeOperationError(
-								this.getNode(),
-								`Invalid JSON in ${key} field: ${(error as Error).message}`,
-								{ itemIndex: i },
-							);
-						}
-						} else if (additionalFields[key] !== '' && additionalFields[key] !== 0) {
+						if (additionalFields[key] !== '' && additionalFields[key] !== 0) {
 							body[key] = additionalFields[key];
 						}
 					});
@@ -555,6 +459,8 @@ export class TelegramStars implements INodeType {
 					}
 
 					responseData = await telegramApiRequest.call(this, 'POST', 'getStarTransactions', body);
+				} else if (operation === 'getBotStarsBalance') {
+					responseData = await telegramApiRequest.call(this, 'POST', 'getMyStarBalance', {});
 				}
 
 				const executionData = this.helpers.constructExecutionMetaData(
