@@ -10,5 +10,4 @@ gulpfile.js
 *.tgz
 .git/
 .gitignore
-plan_for_this_repo.md
 

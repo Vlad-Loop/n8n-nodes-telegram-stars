@@ -6,6 +6,8 @@
 
 Кастомная нода для n8n, которая позволяет работать с платежами Telegram Stars через Telegram Bot API.
 
+![Telegram Stars node](https://raw.githubusercontent.com/Vlad-Loop/n8n-nodes-telegram-stars/master/screenshots/screen-1.png)
+
 ## 🌟 Поддерживаемые возможности
 
 - **Send Invoice** - Отправка счета для оплаты в Telegram Stars
