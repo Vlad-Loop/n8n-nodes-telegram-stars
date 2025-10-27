@@ -7,6 +7,7 @@ import {
 } from 'n8n-workflow';
 
 import { telegramApiRequest } from './GenericFunctions';
+import { disclaimerBlocks } from '../shared/Disclaimers';
 
 export class TelegramStars implements INodeType {
 	description: INodeTypeDescription = {
@@ -29,6 +30,7 @@ export class TelegramStars implements INodeType {
 			},
 		],
 		properties: [
+			...disclaimerBlocks,
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -452,13 +454,35 @@ export class TelegramStars implements INodeType {
 				);
 			}
 
+			// Validate that all prices have required fields
+			const validatedPrices = prices.map((price, index) => {
+				if (!price.label || price.label.trim() === '') {
+					throw new NodeOperationError(
+						this.getNode(),
+						`Price item ${index + 1} must have a label`,
+						{ itemIndex: i },
+					);
+				}
+				if (!price.amount || price.amount <= 0) {
+					throw new NodeOperationError(
+						this.getNode(),
+						`Price item ${index + 1} must have a positive amount`,
+						{ itemIndex: i },
+					);
+				}
+				return {
+					label: price.label.trim(),
+					amount: Math.floor(price.amount), // Ensure amount is integer
+				};
+			});
+
 					const body: any = {
 						chat_id: chatId,
 						title,
 						description,
 						payload,
 						currency,
-						prices,
+						prices: validatedPrices,
 						provider_token: '', // Empty for Telegram Stars
 					};
 
