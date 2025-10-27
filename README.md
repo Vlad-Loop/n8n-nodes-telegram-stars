@@ -2,7 +2,6 @@
 
 [![npm version](https://img.shields.io/npm/v/n8n-nodes-telegram-stars.svg)](https://www.npmjs.com/package/n8n-nodes-telegram-stars)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-Стабильная версия: ![version](https://img.shields.io/badge/version-1.0.0-blue)
 
 Кастомная нода для n8n, которая позволяет работать с платежами Telegram Stars через Telegram Bot API.
 
@@ -67,5 +66,5 @@
 
 ## 📄 Лицензия
 
-MIT License - см. [LICENSE](https://github.com/Vlad-Loop/n8n-nodes-telegram-stars/blob/master/LICENSE.md) для подробностей.
+MIT License - см. [LICENSE](https://github.com/Vlad-Loop/n8n-nodes-telegram-stars/blob/master/LICENSE) для подробностей.
 
