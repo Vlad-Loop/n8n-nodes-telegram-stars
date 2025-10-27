@@ -5,7 +5,7 @@
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/),
 и этот проект придерживается [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2024-12-19
+## [1.0.1] - 27-10-2025
 
 ### Добавлено
 - **Send Invoice** - Отправка счета для оплаты в Telegram Stars
